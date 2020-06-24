@@ -24,10 +24,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <stdio.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <ev.h>
 #include <assert.h>
-
+#include <stdlib.h>
 #include "ds.h"
 #include "ds_dlist.h"
 #include "os.h"
@@ -370,13 +372,198 @@ bool target_vif_config_set (char *ifname, struct schema_Wifi_VIF_Config *vconf)
 #endif
 
 #ifndef IMPL_target_vif_config_set2
+
+
+bool files_equal(char *fileOne, char *fileTwo){
+        if(access(fileOne, F_OK)==-1||access(fileTwo, F_OK)==-1){
+                return false;
+        }
+	FILE *fp = fopen(fileOne, "r");
+	char line[100];
+	while(fgets(line, 100, fp)!=NULL){
+		LOGI("%s",line);
+	}
+	fclose(fp);
+	fp = fopen(fileTwo, "r");
+        while(fgets(line, 100, fp)!=NULL){
+                LOGI("%s",line);
+        }
+        fclose(fp);
+	LOGI("checking files equality");
+        FILE *fp1 = fopen(fileOne, "r");
+        FILE *fp2 = fopen(fileTwo, "r");
+        if(fp1==NULL||fp2==NULL){
+                LOGI("error reading either %s or %s", fileOne, fileTwo);
+        }else{
+                LOGI("I can read the files");
+        }
+        bool endFile = false;
+        char line1[100];
+        char line2[100];
+        while(!endFile){
+                char *fgets1 = fgets(line1, 100, fp1);
+		char *fgets2 = fgets(line2, 100, fp2);
+		if(fgets1!=NULL&&fgets2!=NULL) {
+                        if(strcmp(line1,line2)!=0){
+				LOGI("%s != %s",line1,line2);
+				return false;
+                        }
+			LOGI("%s == %s",line1,line2);
+                }else{
+			LOGI("(fgets1 == %d) != (fgets2  == %d)",(fgets1 == NULL),(fgets2  == NULL));
+                        if((fgets1 == NULL) != (fgets2  == NULL)){
+                                LOGI("files are of a different length");
+				return false;
+                        }
+			endFile = true;
+                }
+        }
+	LOGI("files are equal");
+        return true;
+
+}
+
+
 bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
                             const struct schema_Wifi_Radio_Config *rconf,
                             const struct schema_Wifi_Credential_Config *cconfs,
                             const struct schema_Wifi_VIF_Config_flags *changed,
                             int num_cconfs)
 {
-    return true;
+	LOGI("this is a test2 42269");
+        if(!(rconf->if_name_exists&&rconf->enabled_exists&&rconf->enabled&&rconf->hw_mode_exists&&vconf->ssid_exists)){
+		LOGI("required feild not present:\nrconf->if_name_exists %d\nrconf->enabled_exists %d\nrconf->enabled %d\nrconf->hw_mode_exists %d\nvconf->ssid_exists %d\n",rconf->if_name_exists,rconf->enabled_exists,rconf->enabled,rconf->hw_mode_exists,vconf->ssid_exists);
+                return false;
+        }else{
+		//creates the file for the hostapd conf
+		FILE * fPtr;
+                char* filename;
+                asprintf(&filename, "/tmp/%s.hostapd.conf", rconf->if_name);
+                char *tmpFileName;
+		asprintf(&tmpFileName, "%s.tmp", filename);
+		fPtr = fopen(tmpFileName, "w");
+                if(fPtr == NULL){
+                        LOGI("Unable to create file %s.\n", tmpFileName);
+                        return false;
+                }
+                //sets interface
+                fprintf(fPtr,"interface=%s\n",rconf->if_name);
+                //sets hw_mode
+                if(strcmp(rconf->hw_mode,"11a")==0){
+                        fprintf(fPtr,"hw_mode=a\n");
+                } else if(strcmp(rconf->hw_mode,"11b")==0){
+                        fprintf(fPtr,"hw_mode=b\n");
+                } else if(strcmp(rconf->hw_mode,"11g")==0){
+                        fprintf(fPtr,"hw_mode=g\n");
+                } else if(strcmp(rconf->hw_mode,"11n")==0){
+                        if(rconf->freq_band_exists==1){
+                                if(strcmp(rconf->freq_band,"2.5G")){
+                                        fprintf(fPtr,"hw_mode=g\nieee80211n=1\n");
+                                } else {
+                                        fprintf(fPtr,"hw_mode=a\nieee80211n=1\n");
+                                }
+                        } else {
+                                fprintf(fPtr,"hw_mode=g\nieee80211n=1\n");
+                        }
+                } else if(strcmp(rconf->hw_mode,"11ac")==0){
+                        fprintf(fPtr,"hw_mode=a\nieee80211ac=1\n");
+                } else{
+                        LOGI("Invalid hw_mode\n");
+                }
+		//parses chanel number
+                if(rconf->channel_exists==0 || strcmp(rconf->channel_mode,"auto")==0){
+                        fprintf(fPtr,"channel=0\n");
+                } else {
+                        fprintf(fPtr,"channel=%d\n", rconf->channel);
+                }
+		//parses country code
+                if(rconf->country_exists==1){
+                        fprintf(fPtr,"country_code=%s\n", rconf->country);
+                }
+		//parses ssid
+                fprintf(fPtr,"ssid=%s\n",vconf->ssid);
+		//parses security
+		if(strcmp(vconf->security[0],"WPA-PSK")==0||strcmp(vconf->security[0],"WPA-PSK-RADIUS")==0){
+			fprintf(fPtr,"wpa=2\nrsn_pairwise=CCMP\n");
+			char * token = strtok((char *)vconf->security[1], ",");
+			while( token != NULL ) {
+				fprintf(fPtr,"%s\n", token);
+				token = strtok(NULL, " ");
+			}
+		} else if(strcmp(vconf->security[1],"WPA-PSK")==0||strcmp(vconf->security[1],"WPA-PSK-RADIUS")==0){
+			fprintf(fPtr,"wpa=2\nrsn_pairwise=CCMP\n");
+                        char * token = strtok((char *)vconf->security[0], ",");
+			while( token != NULL ) {
+                                fprintf(fPtr,"%s\n", token); 
+                                token = strtok(NULL, " ");
+                        }
+		}else if(strcmp(vconf->security[0],"OPEN")!=0&&strcmp(vconf->security[1],"OPEN")!=0){
+			LOGI("Neither %s or %s are valid encryption options", vconf->security[0], vconf->security[1]);
+		}
+		fclose(fPtr);
+		//creates and runs the command to run hostapd with the generated conf file
+		FILE *fp;
+		fp = popen("/bin/ps w", "r");
+		if (fp == NULL) {
+			LOGI("Failed to run /bin/ps w");
+		}
+		LOGI("files_equal returned %d", files_equal(filename, tmpFileName));
+		if(!files_equal(filename, tmpFileName)){
+			LOGI("No we are in the if statement");
+			int removeReturned = remove(filename);
+			LOGI("remove(%s) returned %i", filename, removeReturned);
+			if(removeReturned!=0){
+				LOGI("removing %s failed", filename);
+			}
+			int renameReturned = rename(tmpFileName, filename);
+                        LOGI("rename(%s,%s) returned %d", tmpFileName, filename, removeReturned);
+                        if(renameReturned!=0){	
+			//if(rename(tmpFileName, filename)!=0){
+                                LOGI("renaming %s to %s failed",tmpFileName ,filename);
+                        }
+			char hostapdCommand[100];
+        	        strcpy(hostapdCommand, "hostapd -dd -s ");
+                	strcat(hostapdCommand, filename);
+			char process[100];
+			while (fgets(process, sizeof(process), fp) != NULL) {
+				if(strstr(process, hostapdCommand) != 0){
+					LOGI("%s\n", process);
+					//int pid = strtol(strtok(process, " "), NULL, 10);
+					char *pid = strtok(process, " ");
+					LOGI("we're gonna kill %s", pid);
+					char killCommand[100];
+        			        strcpy(killCommand, "kill ");
+	                		strcat(killCommand, pid);
+					system(killCommand);
+					//system(strcat("kill ",pid));
+				}
+			}
+			LOGI("were about to run %s", hostapdCommand);
+			int hostapdReturn = system(hostapdCommand);
+			if(hostapdReturn!=0){
+                	        LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
+                	}
+		} else {
+			bool running = false;
+			char hostapdCommand[100];
+                        strcpy(hostapdCommand, "hostapd -dd -s ");
+                        strcat(hostapdCommand, filename);
+			char process[100];
+                        while (fgets(process, sizeof(process), fp) != NULL) {
+                                if(strstr(process, hostapdCommand) != 0){
+					running = true;
+				}
+			}
+			if(!running){
+				LOGI("were about to run %s", hostapdCommand);
+                        	int hostapdReturn = system(hostapdCommand);
+                	        if(hostapdReturn!=0){
+        	                        LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
+	                        }
+			}
+		}
+	}
+	return true;
 }
 #endif
 
