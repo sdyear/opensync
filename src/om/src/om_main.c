@@ -107,8 +107,7 @@ int main( int argc, char **argv )
     char command[512];
     bool success = false;
  
-    snprintf(command, sizeof(command),
-        "ovs-vsctl --may-exist add-br bridge");
+    snprintf(command, sizeof(command), "ovs-vsctl --may-exist add-br bridge");
 
     // Execute ovs-vsctl to add bridge
     // cmd_log returns 0 on success
@@ -116,6 +115,14 @@ int main( int argc, char **argv )
     if(!success) {
         LOGE("adding bridge failed: %s", command);
     }
+
+    snprintf(command, sizeof(command), "ip link set dev bridge up");
+    // cmd_log returns 0 on success
+    success = (cmd_log(command) == 0);
+    if(!success) {
+        LOGE("setting bridge up failed: %s", command);
+    }
+
 
 
     if( !om_monitor_init() ) {
