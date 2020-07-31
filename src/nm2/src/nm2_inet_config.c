@@ -812,12 +812,30 @@ void nm2_inet_copy(
     NM2_IFACE_INET_CONFIG_COPY(piface->if_cache.gre_local_inet_addr, iconf->gre_local_inet_addr);
 }
 
+void nm2_add_iface_ovs(struct schema_Wifi_Inet_Config *iconf)
+{
+	char if_type[] = "eth";
+	if (strcmp(iconf->if_type,if_type)==0)
+	{
+		LOG(INFO, "interface %s is being added", iconf->if_name);	
+		char command[512];
+		bool success = false;
+		snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s ", iconf->if_name);
+		LOG(INFO, command);
+		success = (cmd_log(command) == 0);
+		if(!success)
+		{
+			LOGE("adding port failed: %s", command);
+		}
+	}else{
+		LOG(INFO, "interface %s isn't being added, cause it's >%s<", iconf->if_name, iconf->if_type);
+	}
+}
 
 struct nm2_iface *nm2_add_inet_conf(struct schema_Wifi_Inet_Config *iconf)
 {
     enum nm2_iftype iftype;
     struct nm2_iface *piface = NULL;
-
 
     LOG(INFO, "nm2_add_inet_conf: INSERT interface %s (type %s).",
             iconf->if_name,
@@ -840,6 +858,8 @@ struct nm2_iface *nm2_add_inet_conf(struct schema_Wifi_Inet_Config *iconf)
                 iconf->if_type);
         return NULL;
     }
+    
+    nm2_add_iface_ovs(iconf);
 
     return piface;
 }
