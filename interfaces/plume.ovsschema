@@ -1,7 +1,7 @@
 {
   "name": "Open_vSwitch",
-  "version": "7.11.171",
-  "cksum": "498969954 170147",
+  "version": "7.11.172",
+  "cksum": "3000912876 170751",
   "tables": {
     "AWLAN_Node": {
       "columns": {
@@ -749,6 +749,35 @@
           "type": {
             "key": {
               "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "controller_address": {
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "datapath_id": {
+          "type": {
+            "key": {
+              "type": "string"
+            },
+            "min": 0,
+            "max": 1
+          }
+        },
+        "of_port": {
+          "type": {
+            "key": {
+              "type": "integer",
+              "minInteger": 1,
+              "maxInteger": 65279
             },
             "min": 0,
             "max": 1

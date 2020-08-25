@@ -814,19 +814,36 @@ void nm2_inet_copy(
 
 void nm2_add_iface_ovs(struct schema_Wifi_Inet_Config *iconf)
 {
-	char if_type[] = "eth";
-	if (strcmp(iconf->if_type,if_type)==0)
-	{
+	char if_type_eth[] = "eth";
+	char if_type_bridge[] = "bridge";
+	if (strcmp(iconf->if_type,if_type_eth)==0){
 		LOG(INFO, "interface %s is being added", iconf->if_name);	
 		char command[512];
 		bool success = false;
-		snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s ", iconf->if_name);
+		snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s -- set interface %s ofport_request=%i ", iconf->if_name, iconf->if_name, iconf->of_port);
 		LOG(INFO, command);
 		success = (cmd_log(command) == 0);
 		if(!success)
 		{
 			LOGE("adding port failed: %s", command);
 		}
+	}else if(strcmp(iconf->if_type,if_type_bridge)==0){
+		LOG(INFO, "bridge %s is being configured", iconf->if_name);
+                char command[512];
+                snprintf(command, sizeof( command ), "ovs-vsctl set bridge bridge other-config:datapath-id=%s", iconf->datapath_id);
+                LOG(INFO, command);
+                if(cmd_log(command) == 0){
+	                LOGE("%s succeeded", command);
+                }else{
+			LOGE("%s failed", command);
+                }
+                snprintf(command, sizeof( command ), "ovs-vsctl set-controller bridge %s", iconf->controller_address);
+                LOG(INFO, command);
+                if(cmd_log(command) == 0){
+                        LOGE("%s succeeded", command);
+                }else{
+                        LOGE("%s failed", command);
+                }
 	}else{
 		LOG(INFO, "interface %s isn't being added, cause it's >%s<", iconf->if_name, iconf->if_type);
 	}
