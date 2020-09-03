@@ -137,7 +137,7 @@ int main (int argc, char ** argv)
 
         return MON_EXIT_RESTART;
     }
-
+    
     /* initialize state machine */
     init_statem();
 

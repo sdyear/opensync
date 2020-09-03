@@ -4,13 +4,13 @@ Copyright (c) 2015, Plume Design Inc. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
    1. Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
+	  notice, this list of conditions and the following disclaimer.
    2. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
+	  notice, this list of conditions and the following disclaimer in the
+	  documentation and/or other materials provided with the distribution.
    3. Neither the name of the Plume Design Inc. nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+	  names of its contributors may be used to endorse or promote products
+	  derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -48,21 +48,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IMPL_target_ready
 bool target_ready(struct ev_loop *loop)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_init
 bool target_init(target_init_opt_t opt, struct ev_loop *loop)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_close
 bool target_close(target_init_opt_t opt, struct ev_loop *loop)
 {
-    return true;
+	return true;
 }
 #endif
 
@@ -73,109 +73,109 @@ bool target_close(target_init_opt_t opt, struct ev_loop *loop)
 #ifndef IMPL_target_serial_get
 bool target_serial_get(void *buff, size_t buffsz)
 {
-    strscpy(((char*)buff), "STUB_SERIAL", buffsz);
-    return true;
+	strscpy(((char*)buff), "STUB_SERIAL", buffsz);
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_id_get
 bool target_id_get(void *buff, size_t buffsz)
 {
-    return target_serial_get(buff, buffsz);
+	return target_serial_get(buff, buffsz);
 }
 #endif
 
 #ifndef IMPL_target_sku_get
 bool target_sku_get(void *buff, size_t buffsz)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_model_get
 bool target_model_get(void *buff, size_t buffsz)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_sw_version_get
 bool target_sw_version_get(void *buff, size_t buffsz)
 {
-    snprintf(buff, buffsz, "%s", app_build_ver_get());
-    return true;
+	snprintf(buff, buffsz, "%s", app_build_ver_get());
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_hw_revision_get
 bool target_hw_revision_get(void *buff, size_t buffsz)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_platform_version_get
 bool target_platform_version_get(void *buff, size_t buffsz)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_log_open
 bool target_log_open(char *name, int flags)
 {
-    return log_open(name, flags);
+	return log_open(name, flags);
 }
 #endif
 
 #ifndef IMPL_target_log_pull
 bool target_log_pull(const char *upload_location, const char *upload_token)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_log_state_file
 const char *target_log_state_file(void)
 {
-    // Notes:
-    // * Call to target_init() is not required.
-    // * Path should be pointing to RW part of the file systems, since
-    //   ev_stat (inotify) is used to watch for file changes.
-    return NULL;
+	// Notes:
+	// * Call to target_init() is not required.
+	// * Path should be pointing to RW part of the file systems, since
+	//   ev_stat (inotify) is used to watch for file changes.
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_log_trigger_dir
 const char *target_log_trigger_dir(void)
 {
-    // Notes:
-    // * Call to target_init() is not required.
-    return NULL;
+	// Notes:
+	// * Call to target_init() is not required.
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_tls_cacert_filename
 const char *target_tls_cacert_filename(void)
 {
-    // Return path/filename to CA Certificate used to validate cloud
-    return TARGET_CERT_PATH "/ca.pem";
+	// Return path/filename to CA Certificate used to validate cloud
+	return TARGET_CERT_PATH "/ca.pem";
 }
 #endif
 
 #ifndef IMPL_target_tls_mycert_filename
 const char *target_tls_mycert_filename(void)
 {
-    // Return path/filename to MY Certificate used to authenticate with cloud
-    return TARGET_CERT_PATH "/client.pem";
+	// Return path/filename to MY Certificate used to authenticate with cloud
+	return TARGET_CERT_PATH "/client.pem";
 }
 #endif
 
 #ifndef IMPL_target_tls_privkey_filename
 const char *target_tls_privkey_filename(void)
 {
-    // Return path/filename to MY Private Key used to authenticate with cloud
-    return TARGET_CERT_PATH "/client_dec.key";
+	// Return path/filename to MY Private Key used to authenticate with cloud
+	return TARGET_CERT_PATH "/client_dec.key";
 }
 #endif
 
@@ -187,17 +187,17 @@ const char *target_tls_privkey_filename(void)
 #ifndef IMPL_target_led_device_dir
 const char *target_led_device_dir(void)
 {
-    // Notes:
-    // * Call to target_init() is not required.
-    return NULL;
+	// Notes:
+	// * Call to target_init() is not required.
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_led_names
 int target_led_names(const char **leds[])
 {
-    /* Return number of different LEDs and their names for current target */
-    return 0;
+	/* Return number of different LEDs and their names for current target */
+	return 0;
 }
 #endif
 
@@ -208,28 +208,28 @@ int target_led_names(const char **leds[])
 #ifndef IMPL_target_ble_preinit
 bool target_ble_preinit(struct ev_loop *loop)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_ble_prerun
 bool target_ble_prerun(struct ev_loop *loop)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_ble_broadcast_start
 bool target_ble_broadcast_start(struct schema_AW_Bluetooth_Config *config)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_ble_broadcast_stop
 bool target_ble_broadcast_stop(void)
 {
-    return false;
+	return false;
 }
 #endif
 
@@ -240,7 +240,7 @@ bool target_ble_broadcast_stop(void)
 #ifndef IMPL_target_om_hook
 bool target_om_hook( target_om_hook_t hook, const char *openflow_rule )
 {
-    return true;
+	return true;
 }
 #endif
 
@@ -251,15 +251,15 @@ bool target_om_hook( target_om_hook_t hook, const char *openflow_rule )
 #ifndef IMPL_target_radio_init
 bool target_radio_init(const struct target_radio_ops *ops)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_radio_config_init
 bool target_radio_config_init(ds_dlist_t *init_cfg)
 {
-    memset(init_cfg, 0, sizeof(*init_cfg));
-    return false;
+	memset(init_cfg, 0, sizeof(*init_cfg));
+	return false;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -270,14 +270,14 @@ bool target_radio_config_init(ds_dlist_t *init_cfg)
 #ifndef IMPL_target_radio_config_init2
 bool target_radio_config_init2(void)
 {
-    return false;
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_radio_config_need_reset
 bool target_radio_config_need_reset(void)
 {
-    return false;
+	return false;
 }
 #endif
 
@@ -294,7 +294,7 @@ bool target_radio_config_set(char *ifname, struct schema_Wifi_Radio_Config *rcon
 
 #ifndef IMPL_target_radio_config_set2
 bool target_radio_config_set2(const struct schema_Wifi_Radio_Config *rconf,
-                              const struct schema_Wifi_Radio_Config_flags *changed)
+							  const struct schema_Wifi_Radio_Config_flags *changed)
 {
   return true;
 }
@@ -351,8 +351,8 @@ bool target_radio_config_register(char  *ifname, target_radio_config_cb_t *rconf
 #ifndef IMPL_target_wan_interface_name
 const char *target_wan_interface_name()
 {
-    const char *iface_name = "eth0";
-    return iface_name;
+	const char *iface_name = "eth0";
+	return iface_name;
 }
 #endif
 
@@ -363,7 +363,7 @@ const char *target_wan_interface_name()
 #ifndef IMPL_target_vif_config_set
 bool target_vif_config_set (char *ifname, struct schema_Wifi_VIF_Config *vconf)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -375,9 +375,9 @@ bool target_vif_config_set (char *ifname, struct schema_Wifi_VIF_Config *vconf)
 
 
 bool files_equal(char *fileOne, char *fileTwo){
-        if(access(fileOne, F_OK)==-1||access(fileTwo, F_OK)==-1){
-                return false;
-        }
+	if(access(fileOne, F_OK)==-1||access(fileTwo, F_OK)==-1){
+		return false;
+	}
 	FILE *fp = fopen(fileOne, "r");
 	char line[100];
 	while(fgets(line, 100, fp)!=NULL){
@@ -385,199 +385,204 @@ bool files_equal(char *fileOne, char *fileTwo){
 	}
 	fclose(fp);
 	fp = fopen(fileTwo, "r");
-        while(fgets(line, 100, fp)!=NULL){
-                LOGI("%s",line);
-        }
-        fclose(fp);
+	while(fgets(line, 100, fp)!=NULL){
+		LOGI("%s",line);
+	}
+	fclose(fp);
 	LOGI("checking files equality");
-        FILE *fp1 = fopen(fileOne, "r");
-        FILE *fp2 = fopen(fileTwo, "r");
-        if(fp1==NULL||fp2==NULL){
-                LOGI("error reading either %s or %s", fileOne, fileTwo);
-        }else{
-                LOGI("I can read the files");
-        }
-        bool endFile = false;
-        char line1[100];
-        char line2[100];
-        while(!endFile){
-                char *fgets1 = fgets(line1, 100, fp1);
-		char *fgets2 = fgets(line2, 100, fp2);
-		if(fgets1!=NULL&&fgets2!=NULL) {
-                        if(strcmp(line1,line2)!=0){
-				LOGI("%s != %s",line1,line2);
-				return false;
-                        }
-			LOGI("%s == %s",line1,line2);
-                }else{
-			LOGI("(fgets1 == %d) != (fgets2  == %d)",(fgets1 == NULL),(fgets2  == NULL));
-                        if((fgets1 == NULL) != (fgets2  == NULL)){
-                                LOGI("files are of a different length");
-				return false;
-                        }
-			endFile = true;
-                }
-        }
-	LOGI("files are equal");
-        return true;
-
+	FILE *fp1 = fopen(fileOne, "r");
+	FILE *fp2 = fopen(fileTwo, "r");
+	char char1, char2;
+	if(fp1==NULL||fp2==NULL){
+		LOGI("error reading either %s or %s", fileOne, fileTwo);
+	}else{
+		LOGI("I can read the files");
+	}
+	while ((char1 = fgetc(fp1)) == (char2 = fgetc(fp2)) && (char1 != EOF));
+	if (char1 == char2) {
+		LOGE("files are identical");
+		return true;
+	} else {
+		LOGE("the files are different");
+		return false;
+	}
 }
 
 
 bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
-                            const struct schema_Wifi_Radio_Config *rconf,
-                            const struct schema_Wifi_Credential_Config *cconfs,
-                            const struct schema_Wifi_VIF_Config_flags *changed,
-                            int num_cconfs)
+							const struct schema_Wifi_Radio_Config *rconf,
+							const struct schema_Wifi_Credential_Config *cconfs,
+							const struct schema_Wifi_VIF_Config_flags *changed,
+							int num_cconfs)
 {
-	LOGI("this is a test2 42269");
-        if(!(rconf->if_name_exists&&rconf->enabled_exists&&rconf->enabled&&rconf->hw_mode_exists&&vconf->ssid_exists)){
-		LOGI("required feild not present:\nrconf->if_name_exists %d\nrconf->enabled_exists %d\nrconf->enabled %d\nrconf->hw_mode_exists %d\nvconf->ssid_exists %d\n",rconf->if_name_exists,rconf->enabled_exists,rconf->enabled,rconf->hw_mode_exists,vconf->ssid_exists);
-                return false;
-        }else{
-		//creates the file for the hostapd conf
-		FILE * fPtr;
-                char* filename;
-                asprintf(&filename, "/tmp/%s.hostapd.conf", rconf->if_name);
-                char *tmpFileName;
-		asprintf(&tmpFileName, "%s.tmp", filename);
-		fPtr = fopen(tmpFileName, "w");
-                if(fPtr == NULL){
-                        LOGI("Unable to create file %s.\n", tmpFileName);
-                        return false;
-                }
-                //sets interface
-                fprintf(fPtr,"interface=%s\n",rconf->if_name);
-                //sets hw_mode
-                if(strcmp(rconf->hw_mode,"11a")==0){
-                        fprintf(fPtr,"hw_mode=a\n");
-                } else if(strcmp(rconf->hw_mode,"11b")==0){
-                        fprintf(fPtr,"hw_mode=b\n");
-                } else if(strcmp(rconf->hw_mode,"11g")==0){
-                        fprintf(fPtr,"hw_mode=g\n");
-                } else if(strcmp(rconf->hw_mode,"11n")==0){
-                        if(rconf->freq_band_exists==1){
-                                if(strcmp(rconf->freq_band,"2.5G")){
-                                        fprintf(fPtr,"hw_mode=g\nieee80211n=1\n");
-                                } else {
-                                        fprintf(fPtr,"hw_mode=a\nieee80211n=1\n");
-                                }
-                        } else {
-                                fprintf(fPtr,"hw_mode=g\nieee80211n=1\n");
-                        }
-                } else if(strcmp(rconf->hw_mode,"11ac")==0){
-                        fprintf(fPtr,"hw_mode=a\nieee80211ac=1\n");
-                } else{
-                        LOGI("Invalid hw_mode\n");
-                }
-		//parses chanel number
-                if(rconf->channel_exists==0 || strcmp(rconf->channel_mode,"auto")==0){
-                        fprintf(fPtr,"channel=0\n");
+    LOGI("this is a test2 42269");
+    LOGI("Configuring %s", vconf -> ssid);
+    if (!(rconf -> if_name_exists && rconf -> enabled_exists && rconf -> enabled && rconf -> hw_mode_exists && vconf -> ssid_exists)) {
+        LOGI("required feild not present:\nrconf->if_name_exists %d\nrconf->enabled_exists %d\nrconf->enabled %d\nrconf->hw_mode_exists %d\nvconf->ssid_exists %d\n", rconf -> if_name_exists, rconf -> enabled_exists, rconf -> enabled, rconf -> hw_mode_exists, vconf -> ssid_exists);
+        return false;
+    } else {
+        //creates the file for the hostapd conf
+        FILE * fPtr;
+        char * filename;
+        asprintf( & filename, "/tmp/%s.hostapd.conf", rconf -> if_name);
+        char * tmpFileName;
+        asprintf( & tmpFileName, "%s.tmp", filename);
+        fPtr = fopen(tmpFileName, "w");
+        if (fPtr == NULL) {
+            LOGI("Unable to create file %s.\n", tmpFileName);
+            return false;
+        }
+        //sets interface
+        fprintf(fPtr, "interface=%s\n", rconf -> if_name);
+        //sets hw_mode
+        if (strcmp(rconf -> hw_mode, "11a") == 0) {
+            fprintf(fPtr, "hw_mode=a\n");
+        } else if (strcmp(rconf -> hw_mode, "11b") == 0) {
+            fprintf(fPtr, "hw_mode=b\n");
+        } else if (strcmp(rconf -> hw_mode, "11g") == 0) {
+            fprintf(fPtr, "hw_mode=g\n");
+        } else if (strcmp(rconf -> hw_mode, "11n") == 0) {
+            if (rconf -> freq_band_exists == 1) {
+                if (strcmp(rconf -> freq_band, "2.5G") == 0) {
+                    fprintf(fPtr, "hw_mode=g\nieee80211n=1\n");
                 } else {
-                        fprintf(fPtr,"channel=%d\n", rconf->channel);
+                    fprintf(fPtr, "hw_mode=a\nieee80211n=1\n");
                 }
-		//parses country code
-                if(rconf->country_exists==1){
-                        fprintf(fPtr,"country_code=%s\n", rconf->country);
+            } else {
+                fprintf(fPtr, "hw_mode=g\nieee80211n=1\n");
+            }
+        } else if (strcmp(rconf -> hw_mode, "11ac") == 0) {
+            fprintf(fPtr, "hw_mode=a\nieee80211ac=1\n");
+        } else {
+            LOGI("Invalid hw_mode\n");
+        }
+        //parses chanel number
+        if (rconf -> channel_exists == 0 || strcmp(rconf -> channel_mode, "auto") == 0) {
+            fprintf(fPtr, "channel=0\n");
+        } else {
+            fprintf(fPtr, "channel=%d\n", rconf -> channel);
+        }
+        //parses country code
+        if (rconf -> country_exists == 1) {
+            fprintf(fPtr, "country_code=%s\n", rconf -> country);
+        }
+        //parses ssid
+        fprintf(fPtr, "ssid=%s\n", vconf -> ssid);
+        //parses security
+        //gets security type
+        bool wpa_psk = false;
+        bool wpa_radius = false;
+        for (int i = 0; i < vconf -> security_len; i++) {
+            LOGE("%s: %s", vconf -> security_keys[i], vconf -> security[i]);
+            if (strcmp(vconf -> security_keys[i], "encryption") == 0) {
+                wpa_psk = (strcmp(vconf -> security[i], "WPA-PSK") == 0);
+                wpa_radius = (strcmp(vconf -> security[i], "WPA-PSK-RADIUS") == 0);
+            }
+        }
+        LOGE("wpa_psk=%i, wpa_radius=%i", wpa_psk, wpa_radius);
+        //if wpa is enabled, puts necessary config in file
+        if (wpa_psk || wpa_radius) {
+            fprintf(fPtr, "wpa=2\nrsn_pairwise=CCMP\nauth_algs=3\nwpa_key_mgmt=WPA-PSK\n");
+        }
+        //adds config for either wpa-psk or wpa-psk-radius
+        if (wpa_psk) {
+            for (int i = 0; i < vconf -> security_len; i++) {
+                if (strcmp(vconf -> security_keys[i], "passphrase") == 0) {
+                    fprintf(fPtr, "wpa_passphrase=%s\n", vconf -> security[i]);
                 }
-		//parses ssid
-                fprintf(fPtr,"ssid=%s\n",vconf->ssid);
-		//parses security
-		if(strcmp(vconf->security[0],"WPA-PSK")==0||strcmp(vconf->security[0],"WPA-PSK-RADIUS")==0){
-			fprintf(fPtr,"wpa=2\nrsn_pairwise=CCMP\n");
-			char * token = strtok((char *)vconf->security[1], ",");
-			while( token != NULL ) {
-				fprintf(fPtr,"%s\n", token);
-				token = strtok(NULL, " ");
-			}
-		} else if(strcmp(vconf->security[1],"WPA-PSK")==0||strcmp(vconf->security[1],"WPA-PSK-RADIUS")==0){
-			fprintf(fPtr,"wpa=2\nrsn_pairwise=CCMP\n");
-                        char * token = strtok((char *)vconf->security[0], ",");
-			while( token != NULL ) {
-                                fprintf(fPtr,"%s\n", token); 
-                                token = strtok(NULL, " ");
-                        }
-		}else if(strcmp(vconf->security[0],"OPEN")!=0&&strcmp(vconf->security[1],"OPEN")!=0){
-			LOGI("Neither %s or %s are valid encryption options", vconf->security[0], vconf->security[1]);
-		}
-		fclose(fPtr);
-		//creates and runs the command to run hostapd with the generated conf file
-		FILE *fp;
-		fp = popen("/bin/ps w", "r");
-		if (fp == NULL) {
-			LOGI("Failed to run /bin/ps w");
-		}
-		LOGI("files_equal returned %d", files_equal(filename, tmpFileName));
-		if(!files_equal(filename, tmpFileName)){
-			LOGI("No we are in the if statement");
-			int removeReturned = remove(filename);
-			LOGI("remove(%s) returned %i", filename, removeReturned);
-			if(removeReturned!=0){
-				LOGI("removing %s failed", filename);
-			}
-			int renameReturned = rename(tmpFileName, filename);
-                        LOGI("rename(%s,%s) returned %d", tmpFileName, filename, removeReturned);
-                        if(renameReturned!=0){	
-			//if(rename(tmpFileName, filename)!=0){
-                                LOGI("renaming %s to %s failed",tmpFileName ,filename);
-                        }
-			char hostapdCommand[100];
-        	        strcpy(hostapdCommand, "hostapd -dd -s ");
-                	strcat(hostapdCommand, filename);
-			char process[100];
-			while (fgets(process, sizeof(process), fp) != NULL) {
-				if(strstr(process, hostapdCommand) != 0){
-					LOGI("%s\n", process);
-					//int pid = strtol(strtok(process, " "), NULL, 10);
-					char *pid = strtok(process, " ");
-					LOGI("we're gonna kill %s", pid);
-					char killCommand[100];
-        			        strcpy(killCommand, "kill ");
-	                		strcat(killCommand, pid);
-					system(killCommand);
-					//system(strcat("kill ",pid));
-				}
-			}
-			LOGI("were about to run %s", hostapdCommand);
-			int hostapdReturn = system(hostapdCommand);
-			if(hostapdReturn!=0){
-                	        LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
-                	}
-		} else {
-			bool running = false;
-			char hostapdCommand[100];
-                        strcpy(hostapdCommand, "hostapd -dd -s ");
-                        strcat(hostapdCommand, filename);
-			char process[100];
-                        while (fgets(process, sizeof(process), fp) != NULL) {
-                                if(strstr(process, hostapdCommand) != 0){
-					running = true;
-				}
-			}
-			if(!running){
-				LOGI("were about to run %s", hostapdCommand);
-                        	int hostapdReturn = system(hostapdCommand);
-                	        if(hostapdReturn!=0){
-        	                        LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
-	                        }
-			}
-		}
-	}
-	return true;
+            }
+        } else if (wpa_radius) {
+            fprintf(fPtr, "wpa_psk_radius=2\nmacaddr_acl=2\n");
+            for (int i = 0; i < vconf -> security_len; i++) {
+                if (strcmp(vconf -> security_keys[i], "auth_server") == 0) {
+                    char * token = strtok((char * ) vconf -> security[i], ":");
+                    fprintf(fPtr, "auth_server_addr=%s\n", token);
+                    token = strtok(NULL, " ");
+                    fprintf(fPtr, "auth_server_port=%s\n", token);
+                }
+                if (strcmp(vconf -> security_keys[i], "auth_server_shared_secret") == 0) {
+                    fprintf(fPtr, "auth_server_shared_secret=%s\n", vconf -> security[i]);
+                }
+            }
+        }
+        fclose(fPtr);
+        //creates and runs the command to run hostapd with the generated conf file
+        FILE * fp;
+        fp = popen("/bin/ps w", "r");
+        if (fp == NULL) {
+            LOGI("Failed to run /bin/ps w");
+        }
+        LOGI("files_equal returned %d", files_equal(filename, tmpFileName));
+        if (!files_equal(filename, tmpFileName)) {
+            LOGI("No we are in the if statement");
+            int removeReturned = remove(filename);
+            LOGI("remove(%s) returned %i", filename, removeReturned);
+            if (removeReturned != 0) {
+                LOGI("removing %s failed", filename);
+            }
+            int renameReturned = rename(tmpFileName, filename);
+            LOGI("rename(%s,%s) returned %d", tmpFileName, filename, removeReturned);
+            if (renameReturned != 0) {
+                //if(rename(tmpFileName, filename)!=0){
+                LOGI("renaming %s to %s failed", tmpFileName, filename);
+            }
+            char hostapdCommand[100];
+            strcpy(hostapdCommand, "hostapd -dd -s ");
+            strcat(hostapdCommand, filename);
+            char process[100];
+            while (fgets(process, sizeof(process), fp) != NULL) {
+                if (strstr(process, hostapdCommand) != 0) {
+                    LOGI("%s\n", process);
+                    //int pid = strtol(strtok(process, " "), NULL, 10);
+                    char * pid = strtok(process, " ");
+                    LOGI("we're gonna kill %s", pid);
+                    char killCommand[100];
+                    strcpy(killCommand, "kill ");
+                    strcat(killCommand, pid);
+                    system(killCommand);
+                    //system(strcat("kill ",pid));
+                }
+            }
+            LOGI("were about to run %s", hostapdCommand);
+            int hostapdReturn = system(hostapdCommand);
+            if (hostapdReturn != 0) {
+                LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
+            }
+        } else {
+            bool running = false;
+            char hostapdCommand[100];
+            strcpy(hostapdCommand, "hostapd -dd -s ");
+            strcat(hostapdCommand, filename);
+            char process[100];
+            while (fgets(process, sizeof(process), fp) != NULL) {
+                if (strstr(process, hostapdCommand) != 0) {
+                    running = true;
+                }
+            }
+            if (!running) {
+                LOGI("were about to run %s", hostapdCommand);
+                int hostapdReturn = system(hostapdCommand);
+                if (hostapdReturn != 0) {
+                    LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
+                }
+            }
+        }
+    }
+    return true;
 }
 #endif
 
 #ifndef IMPL_target_vif_get_sta_ifname
 const char * target_vif_get_sta_ifname(const char *phy)
 {
-    return NULL;
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_vif_config_get
 bool target_vif_config_get(char *ifname, struct schema_Wifi_VIF_Config *vconf)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -588,7 +593,7 @@ bool target_vif_config_get(char *ifname, struct schema_Wifi_VIF_Config *vconf)
 #ifndef IMPL_target_vif_state_get
 bool target_vif_state_get(char  *ifname, struct schema_Wifi_VIF_State *vstate)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -599,7 +604,7 @@ bool target_vif_state_get(char  *ifname, struct schema_Wifi_VIF_State *vstate)
 #ifndef IMPL_target_vif_state_register
 bool target_vif_state_register(char *ifname, target_vif_state_cb_t *vstate_cb)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -610,7 +615,7 @@ bool target_vif_state_register(char *ifname, target_vif_state_cb_t *vstate_cb)
 #ifndef IMPL_target_vif_config_register
 bool target_vif_config_register(char  *ifname, target_vif_config_cb_t *rconf_cb)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -625,7 +630,7 @@ bool target_vif_config_register(char  *ifname, target_vif_config_cb_t *rconf_cb)
 #ifndef IMPL_target_clients_register
 bool target_clients_register(char *ifname, target_clients_cb_t *clients_update_cb)
 {
-    return true;
+	return true;
 }
 #else
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
@@ -640,7 +645,7 @@ bool target_clients_register(char *ifname, target_clients_cb_t *clients_update_c
 #ifndef IMPL_target_dhcp_leased_ip_register
 bool target_dhcp_leased_ip_register(target_dhcp_leased_ip_cb_t *dlip_cb)
 {
-    return true;
+	return true;
 }
 #endif
 
@@ -650,8 +655,8 @@ bool target_dhcp_leased_ip_register(target_dhcp_leased_ip_cb_t *dlip_cb)
 #ifndef IMPL_target_route_state_init
 bool target_route_state_init(ds_dlist_t *inets)
 {
-        ds_dlist_init(inets, target_route_state_init_t, dsl_node);
-            return true;
+		ds_dlist_init(inets, target_route_state_init_t, dsl_node);
+			return true;
 }
 #endif
 
@@ -662,23 +667,23 @@ bool target_route_state_init(ds_dlist_t *inets)
 #ifndef IMPL_target_ethclient_brlist_get
 const char **target_ethclient_brlist_get()
 {
-    static const char *brlist[] = { "br-home", NULL };
-    return brlist;
+	static const char *brlist[] = { "br-home", NULL };
+	return brlist;
 }
 #endif
 
 #ifndef IMPL_target_ethclient_iflist_get
 const char **target_ethclient_iflist_get()
 {
-    static const char *iflist[] = { "eth0", NULL };
-    return iflist;
+	static const char *iflist[] = { "eth0", NULL };
+	return iflist;
 }
 #endif
 
 #ifndef IMPL_target_route_state_register
 bool target_route_state_register(target_route_state_cb_t *rts_cb)
 {
-    return true;
+	return true;
 }
 #endif
 
@@ -689,49 +694,49 @@ bool target_route_state_register(target_route_state_cb_t *rts_cb)
 #ifndef IMPL_target_device_config_register
 bool target_device_config_register(void *awlan_cb)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_device_config_set
 bool target_device_config_set(struct schema_AWLAN_Node *awlan)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_device_execute
 bool target_device_execute(const char *cmd)
 {
-    return true;
+	return true;
 }
 #endif
 #ifndef IMPL_target_device_capabilities_get
 int target_device_capabilities_get()
 {
-    return 0;
+	return 0;
 }
 #endif
 #ifndef IMPL_target_device_connectivity_check
 bool target_device_connectivity_check(const char *ifname,
-                                      target_connectivity_check_t *cstate,
-                                      target_connectivity_check_option_t opts)
+									  target_connectivity_check_t *cstate,
+									  target_connectivity_check_option_t opts)
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_device_restart_managers
 bool target_device_restart_managers()
 {
-    return true;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_device_wdt_ping
 bool target_device_wdt_ping()
 {
-    return true;
+	return true;
 }
 #endif
 
@@ -751,45 +756,45 @@ int target_managers_num = (sizeof(target_managers_config) / sizeof(target_manage
 #ifndef IMPL_target_managers_restart
 void target_managers_restart(void)
 {
-    int fd;
-    char cmd[TARGET_BUFF_SZ];
+	int fd;
+	char cmd[TARGET_BUFF_SZ];
 
-    const char *scripts_dir = target_scripts_dir();
-    int max_fd = sysconf(_SC_OPEN_MAX);
+	const char *scripts_dir = target_scripts_dir();
+	int max_fd = sysconf(_SC_OPEN_MAX);
 
-    LOG(EMERG, "=======  GENERAL RESTART  ========");
+	LOG(EMERG, "=======  GENERAL RESTART  ========");
 
-    sprintf(cmd, "%s/restart.sh", scripts_dir);
+	sprintf(cmd, "%s/restart.sh", scripts_dir);
 
-    LOG(EMERG, "Plan B is executing restart script: %s", cmd);
+	LOG(EMERG, "Plan B is executing restart script: %s", cmd);
 
-    /* Close file descriptors from 3 and above */
-    for(fd = 3; fd < max_fd; fd++) close(fd);
+	/* Close file descriptors from 3 and above */
+	for(fd = 3; fd < max_fd; fd++) close(fd);
 
-    /* When the parent process exits, the child will get disowned */
-    if (fork() != 0)
-    {
-        exit(1);
-    }
+	/* When the parent process exits, the child will get disowned */
+	if (fork() != 0)
+	{
+		exit(1);
+	}
 
-    setsid();
+	setsid();
 
-    /* Execute the restart script */
-    if (scripts_dir == NULL)
-    {
-        LOG(ERR, "Error, script dir not defined");
-    }
-    else
-    {
-        struct stat sb;
-        if ( !(0 == stat(scripts_dir, &sb) && S_ISDIR(sb.st_mode)) )
-        {
-            LOG(ERR, "Error, scripts dir does not exist");
-        }
-    }
-    execl(cmd, cmd, NULL);
+	/* Execute the restart script */
+	if (scripts_dir == NULL)
+	{
+		LOG(ERR, "Error, script dir not defined");
+	}
+	else
+	{
+		struct stat sb;
+		if ( !(0 == stat(scripts_dir, &sb) && S_ISDIR(sb.st_mode)) )
+		{
+			LOG(ERR, "Error, scripts dir does not exist");
+		}
+	}
+	execl(cmd, cmd, NULL);
 
-    LOG(EMERG, "Failed to execute plan B!");
+	LOG(EMERG, "Failed to execute plan B!");
 }
 #endif
 
@@ -799,7 +804,7 @@ void target_managers_restart(void)
 #ifndef IMPL_target_mac_learning_register
 bool target_mac_learning_register(target_mac_learning_cb_t *omac_cb)
 {
-    return false;
+	return false;
 }
 #endif
 
@@ -809,32 +814,32 @@ bool target_mac_learning_register(target_mac_learning_cb_t *omac_cb)
 #ifndef IMPL_target_tools_dir
 const char* target_tools_dir(void)
 {
-    assert(!"tools_dir not defined for current platform.");
-    return NULL;
+	assert(!"tools_dir not defined for current platform.");
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_bin_dir
 const char* target_bin_dir(void)
 {
-    assert(!"bin_dir not defined for current platform.");
-    return NULL;
+	assert(!"bin_dir not defined for current platform.");
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_scripts_dir
 const char* target_scripts_dir(void)
 {
-    // For backwards compatibility, return bin dir
-    return target_bin_dir();
+	// For backwards compatibility, return bin dir
+	return target_bin_dir();
 }
 #endif
 
 #ifndef IMPL_target_persistent_storage_dir
 const char *target_persistent_storage_dir(void)
 {
-    assert(!"persistent_storage_dir not defined for current platform.");
-    return NULL;
+	assert(!"persistent_storage_dir not defined for current platform.");
+	return NULL;
 }
 #endif
 
@@ -845,45 +850,45 @@ const char *target_persistent_storage_dir(void)
 #ifndef IMPL_target_upg_download_required
 bool target_upg_download_required(char *url)
 {
-    (void)url;
-    return true;
+	(void)url;
+	return true;
 }
 #endif
 
 #ifndef IMPL_target_upg_command
 char *target_upg_command()
 {
-    return NULL;
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_upg_command_full
 char *target_upg_command_full()
 {
-    return NULL;
+	return NULL;
 }
 #endif
 
 #ifndef IMPL_target_upg_command_args
 char **target_upg_command_args(char *password)
 {
-    (void)password;
-    static char *upg_command_args[] = { NULL };
-    return upg_command_args;
+	(void)password;
+	static char *upg_command_args[] = { NULL };
+	return upg_command_args;
 }
 #endif
 
 #ifndef IMPL_target_upg_free_space_err
 double target_upg_free_space_err()
 {
-    return 10000.0; /* MB */
+	return 10000.0; /* MB */
 }
 #endif
 
 #ifndef IMPL_target_upg_free_space_warn
 double target_upg_free_space_warn()
 {
-    return 10000.0; /* MB */
+	return 10000.0; /* MB */
 }
 #endif
 
@@ -892,61 +897,61 @@ double target_upg_free_space_warn()
  *****************************************************************************/
 #ifndef IMPL_target_stats_device_get
 bool target_stats_device_get(
-        dpp_device_record_t        *device_entry)
+		dpp_device_record_t        *device_entry)
 {
-    static bool printed = false;
-    if (!printed) {
-        LOG(DEBUG, "Sending device report: stats not supported");
-        printed = true;
-    }
-    return false;
+	static bool printed = false;
+	if (!printed) {
+		LOG(DEBUG, "Sending device report: stats not supported");
+		printed = true;
+	}
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_stats_device_temp_get
 bool target_stats_device_temp_get(
-        radio_entry_t              *radio_cfg,
-        dpp_device_temp_t          *temp_entry)
+		radio_entry_t              *radio_cfg,
+		dpp_device_temp_t          *temp_entry)
 {
-    static bool printed = false;
-    if (!printed) {
-        LOG(DEBUG, "Sending device report: temperature not supported");
-        printed = true;
-    }
-    return false;
+	static bool printed = false;
+	if (!printed) {
+		LOG(DEBUG, "Sending device report: temperature not supported");
+		printed = true;
+	}
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_stats_device_txchainmask_get
 bool target_stats_device_txchainmask_get(
-        radio_entry_t              *radio_cfg,
-        dpp_device_txchainmask_t   *txchainmask_entry)
+		radio_entry_t              *radio_cfg,
+		dpp_device_txchainmask_t   *txchainmask_entry)
 {
-    static bool printed = false;
-    if (!printed) {
-        LOG(DEBUG, "Sending device report: txchainmask not supported");
-        printed = true;
-    }
-    return false;
+	static bool printed = false;
+	if (!printed) {
+		LOG(DEBUG, "Sending device report: txchainmask not supported");
+		printed = true;
+	}
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_stats_device_fanrpm_get
 bool target_stats_device_fanrpm_get(uint32_t        *fan_rpm)
 {
-    static bool printed = false;
-    if (!printed) {
-        LOG(DEBUG, "Sending device report: FAN rpm not supported");
-        printed = true;
-    }
-    return false;
+	static bool printed = false;
+	if (!printed) {
+		LOG(DEBUG, "Sending device report: FAN rpm not supported");
+		printed = true;
+	}
+	return false;
 }
 #endif
 
 #ifndef IMPL_target_get_btrace_type
 btrace_type target_get_btrace_type()
 {
-    return BTRACE_FILE_LOG;
+	return BTRACE_FILE_LOG;
 }
 #endif
 
@@ -957,8 +962,8 @@ btrace_type target_get_btrace_type()
 const char *
 target_map_ifname_to_bandstr(const char *ifname)
 {
-    (void)ifname;
-    return NULL;
+	(void)ifname;
+	return NULL;
 }
 #endif
 
@@ -968,143 +973,143 @@ target_map_ifname_to_bandstr(const char *ifname)
 #ifndef IMPL_target_bsal_init
 int target_bsal_init(bsal_event_cb_t event_cb, struct ev_loop* loop)
 {
-    (void)event_cb;
-    (void)loop;
-    return -1;
+	(void)event_cb;
+	(void)loop;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_cleanup
 int target_bsal_cleanup( void )
 {
-    return -1;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_iface_add
 int target_bsal_iface_add(const bsal_ifconfig_t *ifcfg)
 {
-    (void)ifcfg;
-    return -1;
+	(void)ifcfg;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_iface_update
 int target_bsal_iface_update(const bsal_ifconfig_t *ifcfg)
 {
-    (void)ifcfg;
-    return -1;
+	(void)ifcfg;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_iface_remove
 int target_bsal_iface_remove(const bsal_ifconfig_t *ifcfg)
 {
-    (void)ifcfg;
-    return -1;
+	(void)ifcfg;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_add
 int target_bsal_client_add(const char *ifname, const uint8_t *mac_addr,
-                           const bsal_client_config_t *conf)
+						   const bsal_client_config_t *conf)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)conf;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)conf;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_update
 int target_bsal_client_update(const char *ifname, const uint8_t *mac_addr,
-                              const bsal_client_config_t *conf)
+							  const bsal_client_config_t *conf)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)conf;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)conf;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_remove
 int target_bsal_client_remove(const char *ifname, const uint8_t *mac_addr)
 {
-    (void)ifname;
-    (void)mac_addr;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_measure
 int target_bsal_client_measure(const char *ifname, const uint8_t *mac_addr,
-                               int num_samples)
+							   int num_samples)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)num_samples;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)num_samples;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_disconnect
 int target_bsal_client_disconnect(const char *ifname, const uint8_t *mac_addr,
-                                  bsal_disc_type_t type, uint8_t reason)
+								  bsal_disc_type_t type, uint8_t reason)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)type;
-    (void)reason;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)type;
+	(void)reason;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_client_info
 int target_bsal_client_info(const char *ifname, const uint8_t *mac_addr, bsal_client_info_t *info)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)info;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)info;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_bss_tm_request
 int target_bsal_bss_tm_request(const char *ifname, const uint8_t *mac_addr,
-                               const bsal_btm_params_t *btm_params)
+							   const bsal_btm_params_t *btm_params)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)btm_params;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)btm_params;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_rrm_beacon_report_request
 int target_bsal_rrm_beacon_report_request(const char *ifname,
-                        const uint8_t *mac_addr, const bsal_rrm_params_t *rrm_params)
+						const uint8_t *mac_addr, const bsal_rrm_params_t *rrm_params)
 {
-    (void)ifname;
-    (void)mac_addr;
-    (void)rrm_params;
-    return -1;
+	(void)ifname;
+	(void)mac_addr;
+	(void)rrm_params;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_rrm_set_neighbor
 int target_bsal_rrm_set_neighbor(const char *ifname, const bsal_neigh_info_t *nr)
 {
-    (void)ifname;
-    (void)nr;
-    return -1;
+	(void)ifname;
+	(void)nr;
+	return -1;
 }
 #endif
 
 #ifndef IMPL_target_bsal_rrm_remove_neighbor
 int target_bsal_rrm_remove_neighbor(const char *ifname, const bsal_neigh_info_t *nr)
 {
-    (void)ifname;
-    (void)nr;
-    return -1;
+	(void)ifname;
+	(void)nr;
+	return -1;
 }
 #endif

@@ -820,14 +820,18 @@ void nm2_add_iface_ovs(struct schema_Wifi_Inet_Config *iconf)
 		LOG(INFO, "interface %s is being added", iconf->if_name);	
 		char command[512];
 		bool success = false;
-		snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s -- set interface %s ofport_request=%i ", iconf->if_name, iconf->if_name, iconf->of_port);
+		if(iconf->of_port_exists){
+			snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s -- set interface %s ofport_request=%i ", iconf->if_name, iconf->if_name, iconf->of_port);
+		} else {
+			snprintf(command, sizeof( command ), "ovs-vsctl --may-exist add-port bridge %s -- set interface %s", iconf->if_name, iconf->if_name);
+		}
 		LOG(INFO, command);
 		success = (cmd_log(command) == 0);
 		if(!success)
 		{
 			LOGE("adding port failed: %s", command);
 		}
-	}else if(strcmp(iconf->if_type,if_type_bridge)==0){
+	}else if(strcmp(iconf->if_type,if_type_bridge)==0 && iconf->datapath_id_exists && iconf->controller_address_exists){
 		LOG(INFO, "bridge %s is being configured", iconf->if_name);
                 char command[512];
                 snprintf(command, sizeof( command ), "ovs-vsctl set bridge bridge other-config:datapath-id=%s", iconf->datapath_id);

@@ -120,7 +120,7 @@ int main( int argc, char **argv )
     // cmd_log returns 0 on success
     success = (cmd_log(command) == 0);
     if(!success) {
-        LOGE("setting bridge up failed: %s", command);
+        LOGE("setting bridge state to up failed: %s", command);
     }
 
 

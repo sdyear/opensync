@@ -309,13 +309,6 @@ void fill_entity_data(struct schema_AWLAN_Node * s_awlan_node)
         strcpy(s_awlan_node->serial_number,"1234567890");
     }
     s_awlan_node->serial_number_exists = true;
-/*
-    char hostname[1024];
-    hostname[1023] = '\0';
-    gethostname(hostname, 1023);
-    LOGE("Hostname: %s\n", hostname);
-*/
-
 
     if (0 == gethostname(buff, sizeof(buff)))
     {
