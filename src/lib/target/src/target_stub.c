@@ -374,38 +374,28 @@ bool target_vif_config_set (char *ifname, struct schema_Wifi_VIF_Config *vconf)
 #ifndef IMPL_target_vif_config_set2
 
 
-bool files_equal(char *fileOne, char *fileTwo){
-	if(access(fileOne, F_OK)==-1||access(fileTwo, F_OK)==-1){
+bool files_equal(char *config, char *fileName){
+	if(access(fileName, F_OK)==-1){
 		return false;
 	}
-	FILE *fp = fopen(fileOne, "r");
-	char line[100];
-	while(fgets(line, 100, fp)!=NULL){
-		LOGI("%s",line);
-	}
-	fclose(fp);
-	fp = fopen(fileTwo, "r");
-	while(fgets(line, 100, fp)!=NULL){
-		LOGI("%s",line);
-	}
-	fclose(fp);
 	LOGI("checking files equality");
-	FILE *fp1 = fopen(fileOne, "r");
-	FILE *fp2 = fopen(fileTwo, "r");
-	char char1, char2;
-	if(fp1==NULL||fp2==NULL){
-		LOGI("error reading either %s or %s", fileOne, fileTwo);
-	}else{
-		LOGI("I can read the files");
-	}
-	while ((char1 = fgetc(fp1)) == (char2 = fgetc(fp2)) && (char1 != EOF));
-	if (char1 == char2) {
-		LOGE("files are identical");
-		return true;
-	} else {
-		LOGE("the files are different");
+	FILE *fp = fopen(fileName, "r");
+	if(fp==NULL){
+		LOGE("error reading either %s", fileName);
 		return false;
 	}
+	if(config==NULL){
+		LOGE("config==NULL");
+		return false;
+	}
+	for(size_t i =0; i < strlen(config); i++){
+		char c = fgetc(fp);
+		if(config[i] != c){
+			return false;
+		}
+	}
+	if(fp) pclose(fp);
+	return true;
 }
 
 
@@ -421,55 +411,46 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
         LOGI("required feild not present:\nrconf->if_name_exists %d\nrconf->enabled_exists %d\nrconf->enabled %d\nrconf->hw_mode_exists %d\nvconf->ssid_exists %d\n", rconf -> if_name_exists, rconf -> enabled_exists, rconf -> enabled, rconf -> hw_mode_exists, vconf -> ssid_exists);
         return false;
     } else {
-        //creates the file for the hostapd conf
-        FILE * fPtr;
-        char * filename;
-        asprintf( & filename, "/tmp/%s.hostapd.conf", rconf -> if_name);
-        char * tmpFileName;
-        asprintf( & tmpFileName, "%s.tmp", filename);
-        fPtr = fopen(tmpFileName, "w");
-        if (fPtr == NULL) {
-            LOGI("Unable to create file %s.\n", tmpFileName);
-            return false;
-        }
+        char config[512];
+        int pos = 0;
         //sets interface
-        fprintf(fPtr, "interface=%s\n", rconf -> if_name);
+        // fprintf(fPtr, "interface=%s\n", rconf -> if_name);
+        pos = sprintf(&config[0], "interface=%s\n", rconf -> if_name);
         //sets hw_mode
         if (strcmp(rconf -> hw_mode, "11a") == 0) {
-            fprintf(fPtr, "hw_mode=a\n");
+        	pos += sprintf(&config[pos], "hw_mode=a\n");
         } else if (strcmp(rconf -> hw_mode, "11b") == 0) {
-            fprintf(fPtr, "hw_mode=b\n");
+        	pos += sprintf(&config[pos], "hw_mode=b\n");
         } else if (strcmp(rconf -> hw_mode, "11g") == 0) {
-            fprintf(fPtr, "hw_mode=g\n");
+        	pos += sprintf(&config[pos], "hw_mode=g\n");
         } else if (strcmp(rconf -> hw_mode, "11n") == 0) {
             if (rconf -> freq_band_exists == 1) {
                 if (strcmp(rconf -> freq_band, "2.5G") == 0) {
-                    fprintf(fPtr, "hw_mode=g\nieee80211n=1\n");
+                	pos += sprintf(&config[pos], "hw_mode=g\nieee80211n=1\n");
                 } else {
-                    fprintf(fPtr, "hw_mode=a\nieee80211n=1\n");
+                	pos += sprintf(&config[pos], "hw_mode=a\nieee80211n=1\n");
                 }
             } else {
-                fprintf(fPtr, "hw_mode=g\nieee80211n=1\n");
+                pos += sprintf(&config[pos], "hw_mode=g\nieee80211n=1\n");
             }
         } else if (strcmp(rconf -> hw_mode, "11ac") == 0) {
-            fprintf(fPtr, "hw_mode=a\nieee80211ac=1\n");
+            pos += sprintf(&config[pos], "hw_mode=a\nieee80211ac=1\n");
         } else {
             LOGI("Invalid hw_mode\n");
         }
         //parses chanel number
         if (rconf -> channel_exists == 0 || strcmp(rconf -> channel_mode, "auto") == 0) {
-            fprintf(fPtr, "channel=0\n");
+            pos += sprintf(&config[pos], "channel=0\n");
         } else {
-            fprintf(fPtr, "channel=%d\n", rconf -> channel);
+            pos += sprintf(&config[pos], "channel=%d\n", rconf -> channel);
         }
         //parses country code
         if (rconf -> country_exists == 1) {
-            fprintf(fPtr, "country_code=%s\n", rconf -> country);
+            pos += sprintf(&config[pos], "country_code=%s\n", rconf -> country);
         }
         //parses ssid
-        fprintf(fPtr, "ssid=%s\n", vconf -> ssid);
+        pos += sprintf(&config[pos], "ssid=%s\n", vconf -> ssid);
         //parses security
-        //gets security type
         bool wpa_psk = false;
         bool wpa_radius = false;
         for (int i = 0; i < vconf -> security_len; i++) {
@@ -482,65 +463,61 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
         LOGE("wpa_psk=%i, wpa_radius=%i", wpa_psk, wpa_radius);
         //if wpa is enabled, puts necessary config in file
         if (wpa_psk || wpa_radius) {
-            fprintf(fPtr, "wpa=2\nrsn_pairwise=CCMP\nauth_algs=3\nwpa_key_mgmt=WPA-PSK\n");
+        	pos += sprintf(&config[pos], "wpa=2\nrsn_pairwise=CCMP\nauth_algs=3\nwpa_key_mgmt=WPA-PSK\n");
         }
         //adds config for either wpa-psk or wpa-psk-radius
         if (wpa_psk) {
             for (int i = 0; i < vconf -> security_len; i++) {
                 if (strcmp(vconf -> security_keys[i], "passphrase") == 0) {
-                    fprintf(fPtr, "wpa_passphrase=%s\n", vconf -> security[i]);
+        			pos += sprintf(&config[pos], "wpa_passphrase=%s\n", vconf -> security[i]);
                 }
             }
         } else if (wpa_radius) {
-            fprintf(fPtr, "wpa_psk_radius=2\nmacaddr_acl=2\n");
+        	pos += sprintf(&config[pos], "wpa_psk_radius=2\nmacaddr_acl=2\n");
             for (int i = 0; i < vconf -> security_len; i++) {
                 if (strcmp(vconf -> security_keys[i], "auth_server") == 0) {
                     char * token = strtok((char * ) vconf -> security[i], ":");
-                    fprintf(fPtr, "auth_server_addr=%s\n", token);
+        			pos += sprintf(&config[pos], "auth_server_addr=%s\n", token);
                     token = strtok(NULL, " ");
-                    fprintf(fPtr, "auth_server_port=%s\n", token);
+        			pos += sprintf(&config[pos], "auth_server_port=%s\n", token);
                 }
                 if (strcmp(vconf -> security_keys[i], "auth_server_shared_secret") == 0) {
-                    fprintf(fPtr, "auth_server_shared_secret=%s\n", vconf -> security[i]);
+        			pos += sprintf(&config[pos], "auth_server_shared_secret=%s\n", vconf -> security[i]);
                 }
             }
         }
-        fclose(fPtr);
+        LOGE("string = \n %s", config);
         //creates and runs the command to run hostapd with the generated conf file
         FILE * fp;
         fp = popen("/bin/ps w", "r");
         if (fp == NULL) {
             LOGI("Failed to run /bin/ps w");
         }
-        LOGI("files_equal returned %d", files_equal(filename, tmpFileName));
-        if (!files_equal(filename, tmpFileName)) {
-            LOGI("No we are in the if statement");
-            int removeReturned = remove(filename);
-            LOGI("remove(%s) returned %i", filename, removeReturned);
-            if (removeReturned != 0) {
-                LOGI("removing %s failed", filename);
-            }
-            int renameReturned = rename(tmpFileName, filename);
-            LOGI("rename(%s,%s) returned %d", tmpFileName, filename, removeReturned);
-            if (renameReturned != 0) {
-                //if(rename(tmpFileName, filename)!=0){
-                LOGI("renaming %s to %s failed", tmpFileName, filename);
-            }
-            char hostapdCommand[100];
-            strcpy(hostapdCommand, "hostapd -dd -s ");
+        char * filename;
+        asprintf( & filename, "/tmp/%s.hostapd.conf", rconf -> if_name);
+        LOGI("files_equal returned %d", files_equal(config, filename));
+        if (!files_equal(config, filename)) {
+            LOGI("hostapd config has changed");
+            FILE * configFp = fopen(filename, "w");
+			if(configFp==NULL){
+				LOGE("error reading either %s", filename);
+        		if(filename) free(filename);
+        		if(fp) pclose(fp);  
+				return false;
+			}
+            fwrite(config, 1, sizeof(config), configFp);
+            fclose(configFp);
+            char hostapdCommand[100] = "hostapd -dd -s ";
             strcat(hostapdCommand, filename);
             char process[100];
             while (fgets(process, sizeof(process), fp) != NULL) {
                 if (strstr(process, hostapdCommand) != 0) {
                     LOGI("%s\n", process);
-                    //int pid = strtol(strtok(process, " "), NULL, 10);
                     char * pid = strtok(process, " ");
                     LOGI("we're gonna kill %s", pid);
-                    char killCommand[100];
-                    strcpy(killCommand, "kill ");
+                    char killCommand[100] = "kill ";
                     strcat(killCommand, pid);
                     system(killCommand);
-                    //system(strcat("kill ",pid));
                 }
             }
             LOGI("were about to run %s", hostapdCommand);
@@ -550,13 +527,13 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
             }
         } else {
             bool running = false;
-            char hostapdCommand[100];
-            strcpy(hostapdCommand, "hostapd -dd -s ");
+            char hostapdCommand[100] = "hostapd -dd -s ";
             strcat(hostapdCommand, filename);
             char process[100];
             while (fgets(process, sizeof(process), fp) != NULL) {
                 if (strstr(process, hostapdCommand) != 0) {
                     running = true;
+                    break;
                 }
             }
             if (!running) {
@@ -567,6 +544,8 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
                 }
             }
         }
+        if(filename) free(filename);
+        if(fp) pclose(fp);
     }
     return true;
 }
