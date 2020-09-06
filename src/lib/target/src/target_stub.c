@@ -388,12 +388,12 @@ bool files_equal(char *config, char *fileName){
 		LOGE("config==NULL");
 		return false;
 	}
+	char c;
 	for(size_t i =0; i < strlen(config); i++){
-		char c = fgetc(fp);
-		if(config[i] != c){
-			return false;
-		}
+		c = fgetc(fp);
+		if(config[i] != c) return false;
 	}
+	if(c!=EOF) return false;
 	if(fp) pclose(fp);
 	return true;
 }
@@ -405,7 +405,6 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
 							const struct schema_Wifi_VIF_Config_flags *changed,
 							int num_cconfs)
 {
-    LOGI("this is a test2 42269");
     LOGI("Configuring %s", vconf -> ssid);
     if (!(rconf -> if_name_exists && rconf -> enabled_exists && rconf -> enabled && rconf -> hw_mode_exists && vconf -> ssid_exists)) {
         LOGI("required feild not present:\nrconf->if_name_exists %d\nrconf->enabled_exists %d\nrconf->enabled %d\nrconf->hw_mode_exists %d\nvconf->ssid_exists %d\n", rconf -> if_name_exists, rconf -> enabled_exists, rconf -> enabled, rconf -> hw_mode_exists, vconf -> ssid_exists);
@@ -425,7 +424,7 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
         	pos += sprintf(&config[pos], "hw_mode=g\n");
         } else if (strcmp(rconf -> hw_mode, "11n") == 0) {
             if (rconf -> freq_band_exists == 1) {
-                if (strcmp(rconf -> freq_band, "2.5G") == 0) {
+                if (strcmp(rconf -> freq_band, "2.4G") == 0) {
                 	pos += sprintf(&config[pos], "hw_mode=g\nieee80211n=1\n");
                 } else {
                 	pos += sprintf(&config[pos], "hw_mode=a\nieee80211n=1\n");
@@ -450,7 +449,7 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
         }
         //parses ssid
         pos += sprintf(&config[pos], "ssid=%s\n", vconf -> ssid);
-        //parses security
+        //parses security to find what type is being used
         bool wpa_psk = false;
         bool wpa_radius = false;
         for (int i = 0; i < vconf -> security_len; i++) {
@@ -475,6 +474,7 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
         } else if (wpa_radius) {
         	pos += sprintf(&config[pos], "wpa_psk_radius=2\nmacaddr_acl=2\n");
             for (int i = 0; i < vconf -> security_len; i++) {
+            	//loops through to find the fields we want
                 if (strcmp(vconf -> security_keys[i], "auth_server") == 0) {
                     char * token = strtok((char * ) vconf -> security[i], ":");
         			pos += sprintf(&config[pos], "auth_server_addr=%s\n", token);
@@ -486,17 +486,33 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
                 }
             }
         }
-        LOGE("string = \n %s", config);
-        //creates and runs the command to run hostapd with the generated conf file
+        LOGI("string = \n %s", config);
+        //get output from ps w
         FILE * fp;
         fp = popen("/bin/ps w", "r");
         if (fp == NULL) {
             LOGI("Failed to run /bin/ps w");
         }
+        // get the config file name
         char * filename;
         asprintf( & filename, "/tmp/%s.hostapd.conf", rconf -> if_name);
         LOGI("files_equal returned %d", files_equal(config, filename));
+        // check if hostapd is running and if so save its PID
+        char hostapdCommand[100] = "hostapd -dd -s ";
+        strcat(hostapdCommand, filename);
+        bool hostapd_running = false;
+        char *hostapd_pid;
+        char process[100];
+        while (fgets(process, sizeof(process), fp) != NULL) {
+            if (strstr(process, hostapdCommand) != 0) {
+            	hostapd_running = true;
+            	hostapd_pid = strtok(process, " ");
+            }
+        }
+        // if the config just generaed matches an existing config file
         if (!files_equal(config, filename)) {
+        	// if the config is different
+        	//write the new config to the a file
             LOGI("hostapd config has changed");
             FILE * configFp = fopen(filename, "w");
 			if(configFp==NULL){
@@ -507,36 +523,22 @@ bool target_vif_config_set2(const struct schema_Wifi_VIF_Config *vconf,
 			}
             fwrite(config, 1, sizeof(config), configFp);
             fclose(configFp);
-            char hostapdCommand[100] = "hostapd -dd -s ";
-            strcat(hostapdCommand, filename);
-            char process[100];
-            while (fgets(process, sizeof(process), fp) != NULL) {
-                if (strstr(process, hostapdCommand) != 0) {
-                    LOGI("%s\n", process);
-                    char * pid = strtok(process, " ");
-                    LOGI("we're gonna kill %s", pid);
-                    char killCommand[100] = "kill ";
-                    strcat(killCommand, pid);
-                    system(killCommand);
-                }
+            // kill hostapd
+            if(hostapd_running){
+                LOGI("we're gonna kill %s", hostapd_pid);
+                char killCommand[100] = "kill ";
+                strcat(killCommand, hostapd_pid);
+                system(killCommand);
             }
+            //start hostapd
             LOGI("were about to run %s", hostapdCommand);
             int hostapdReturn = system(hostapdCommand);
             if (hostapdReturn != 0) {
                 LOGI("start hostapd returned non-zero value of %d.", hostapdReturn);
             }
         } else {
-            bool running = false;
-            char hostapdCommand[100] = "hostapd -dd -s ";
-            strcat(hostapdCommand, filename);
-            char process[100];
-            while (fgets(process, sizeof(process), fp) != NULL) {
-                if (strstr(process, hostapdCommand) != 0) {
-                    running = true;
-                    break;
-                }
-            }
-            if (!running) {
+        	//if there is already a config file with the config we want but hostapd isn't running, start hostapd with the existing file
+            if (!hostapd_running) {
                 LOGI("were about to run %s", hostapdCommand);
                 int hostapdReturn = system(hostapdCommand);
                 if (hostapdReturn != 0) {
